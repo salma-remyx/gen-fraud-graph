@@ -16,6 +16,7 @@ from tqdm import tqdm
 from gen_fraud_graph.config import Config
 from gen_fraud_graph.embeddings import EmbeddingGenerator
 from gen_fraud_graph.exporters import get_headers
+from gen_fraud_graph.scam_chains import ScamRailGenerator
 from gen_fraud_graph.typologies import FraudRingGenerator
 
 # ---------------------------------------------------------------------------
@@ -196,8 +197,7 @@ def _generate_transactions_chunk(
             writer.writerows(final_rows)
             if (i + chunk_count) % 50_000 == 0:
                 print(
-                    f"  Worker {worker_id} Batch {batch_id}: "
-                    f"{i + chunk_count} transactions written"
+                    f"  Worker {worker_id} Batch {batch_id}: {i + chunk_count} transactions written"
                 )
 
     return f"Worker {worker_id} Batch {batch_id}: Generated {count} transactions"
@@ -338,7 +338,7 @@ class FraudGraphGenerator:
             num_rings=cfg.num_fraud_rings,
             depth_range=cfg.fraud_ring_depth_range,
         )
-        n_tx, _ = fraud_gen.generate(
+        n_tx, next_tx_id = fraud_gen.generate(
             max_account_id=cfg.num_accounts,
             start_tx_id=cfg.num_transactions,
             embedder=embedder,
@@ -347,3 +347,16 @@ class FraudGraphGenerator:
             compress=cfg.compress,
         )
         print(f"  Injected {n_tx:,} fraud transactions across {cfg.num_fraud_rings:,} rings")
+
+        # Second typology — multi-rail, temporally ordered scam chains.
+        assert cfg.num_scam_chains is not None
+        scam_gen = ScamRailGenerator(num_chains=cfg.num_scam_chains)
+        n_scam, _ = scam_gen.generate(
+            max_account_id=cfg.num_accounts,
+            start_tx_id=next_tx_id,
+            embedder=embedder,
+            output_dir=cfg.output_dir,
+            fmt=cfg.output_format,
+            compress=cfg.compress,
+        )
+        print(f"  Injected {n_scam:,} scam transactions across {cfg.num_scam_chains:,} chains")
