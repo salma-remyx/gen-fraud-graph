@@ -16,6 +16,8 @@ class Config:
             accounts and ~90 M transactions.  Use ``0.01`` for ~100 K accounts.
         num_fraud_rings: Number of cyclic fraud patterns to inject.  When
             *None* it is derived automatically from *scale_factor*.
+        num_scam_chains: Number of multi-rail scam chains to inject.  When
+            *None* it is derived automatically from *scale_factor*.
         fraud_ring_depth_range: Min/max depth (hops) of each fraud ring.
         embedding_provider: ``"fake"`` (random vectors, no deps), ``"local"``
             (SentenceTransformers), or ``"openai"`` (requires API key).
@@ -30,6 +32,7 @@ class Config:
 
     scale_factor: float = 1.0
     num_fraud_rings: int | None = None
+    num_scam_chains: int | None = None
     fraud_ring_depth_range: tuple[int, int] = (4, 7)
     embedding_provider: Literal["fake", "local", "openai"] = "fake"
     embedding_dim: int = 768
@@ -48,3 +51,5 @@ class Config:
         self.num_transactions = int(90_000_000 * self.scale_factor)
         if self.num_fraud_rings is None:
             self.num_fraud_rings = max(10, int(1000 * self.scale_factor))
+        if self.num_scam_chains is None:
+            self.num_scam_chains = max(5, int(500 * self.scale_factor))
