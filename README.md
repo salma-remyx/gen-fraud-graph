@@ -296,3 +296,26 @@ If you use this tool in your research, please cite:
     status: active
     team: ai-labs
 -->
+
+---
+
+## Fraud typologies
+
+In addition to the cyclic **fraud rings** above, the generator injects
+**multi-rail scam chains** — a second typology adapted from
+*"Understanding Scam Trends and Rail Paths from Reddit Self-Disclosure
+Narratives"* (arXiv:2606.16874).
+
+- **Multi-rail scam chains** — linear, temporally ordered paths whose
+  consecutive edges each represent a stage of a scam lifecycle, advancing
+  through an ordered subset of four rails (`identity`, `communication`,
+  `platform`, `payment`). Path complexity varies systematically by scam
+  type (`phishing`, `tech_support_scam`, `marketplace_scam`,
+  `investment_scam`, `romance_scam`), and each chain carries a strictly
+  increasing timestamp sequence so the scam path is recoverable.
+
+Scam chains are written to `fraud/transactions_scam.csv` and
+`fraud/scam_cases.csv` (the latter records the ordered `rails` and per-stage
+`timestamps`), and are validated by `verify_scam_chains` — both edge
+existence and temporal ordering — alongside the ring check. Configure the
+count with `Config(num_scam_chains=...)`.

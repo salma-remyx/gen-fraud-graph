@@ -1,0 +1,15 @@
+benchmarks:
+  - suite: "eval/eval_scam_chains.py"
+    scorer: scam_chain_verification_rate
+    baseline: main
+    metrics:
+      - name: scam_chain_verification_rate
+        role: target
+        direction: maximize
+        threshold: 1.0
+      - name: fraud_ring_verification_rate
+        role: guardrail
+        direction: maximize
+        threshold: 1.0
+    policy:
+      guardrail_veto: true

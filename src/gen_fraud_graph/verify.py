@@ -88,6 +88,15 @@ def main() -> None:
         sys.exit(1)
 
     ok = verify_fraud_patterns(cases, args.data_dir)
+
+    # Multi-rail scam chains are an optional second typology; verify them too
+    # when present (edge existence + temporal ordering of rails).
+    scam_cases = os.path.join(args.data_dir, "fraud", "scam_cases.csv")
+    if os.path.exists(scam_cases):
+        from gen_fraud_graph.scam_chains import verify_scam_chains
+
+        ok = verify_scam_chains(scam_cases) and ok
+
     sys.exit(0 if ok else 1)
 
 
